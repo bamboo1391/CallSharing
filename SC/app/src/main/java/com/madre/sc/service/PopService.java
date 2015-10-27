@@ -15,11 +15,13 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.madre.sc.R;
+import com.madre.sc.common.Constants;
 import com.madre.sc.view.activity.PopupAvatarActivity;
 import com.madre.sc.view.fragment.MapsFragment;
 
 import java.lang.ref.WeakReference;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import jp.co.recruit_lifestyle.android.floatingview.FloatingViewListener;
 import jp.co.recruit_lifestyle.android.floatingview.FloatingViewManager;
 
@@ -32,6 +34,7 @@ public class PopService extends Service implements FloatingViewListener {
     private IBinder mPopServiceBinder;
 
     private FloatingViewManager mFloatingViewManager;
+    private boolean isShowPop = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -44,13 +47,17 @@ public class PopService extends Service implements FloatingViewListener {
         windowManager.getDefaultDisplay().getMetrics(metrics);
         mPopServiceBinder = new PopServiceBinder(this);
         final LayoutInflater inflater = LayoutInflater.from(this);
-        final ImageView iconView = (ImageView) inflater.inflate(R.layout.widget_chathead, null, false);
+        final CircleImageView iconView = (CircleImageView) inflater.inflate(R.layout.widget_chathead, null, false);
         iconView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent dialogIntent = new Intent(PopService.this, PopupAvatarActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
+                if (isShowPop) {
+                    sendBroadcast(new Intent(Constants.INTENT_ACTION_CLOSE_ACTIVITY));
+                } else {
+                    Intent dialogIntent = new Intent(PopService.this, PopupAvatarActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dialogIntent);
+                }
             }
         });
 
@@ -59,7 +66,7 @@ public class PopService extends Service implements FloatingViewListener {
         mFloatingViewManager.setActionTrashIconImage(R.drawable.ic_trash_action);
         final FloatingViewManager.Options options = new FloatingViewManager.Options();
         options.shape = FloatingViewManager.SHAPE_CIRCLE;
-        options.overMargin = (int) (16 * metrics.density);
+        options.overMargin = (int) (10 * metrics.density);
         mFloatingViewManager.addViewToWindow(iconView, options);
 
         startForeground(NOTIFICATION_ID, createNotification());
@@ -70,6 +77,7 @@ public class PopService extends Service implements FloatingViewListener {
     @Override
     public void onDestroy() {
         destroy();
+        sendBroadcast(new Intent(Constants.INTENT_ACTION_CLOSE_ACTIVITY));
         super.onDestroy();
     }
 
