@@ -13,10 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.madre.sc.view.activity.MainActivity;
 import com.madre.sc.R;
+import com.madre.sc.view.activity.PopupAvatarActivity;
+import com.madre.sc.view.fragment.MapsFragment;
 
 import java.lang.ref.WeakReference;
 
@@ -35,7 +35,6 @@ public class PopService extends Service implements FloatingViewListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // 既にManagerが存在していたら何もしない
         if (mFloatingViewManager != null) {
             return START_STICKY;
         }
@@ -49,7 +48,9 @@ public class PopService extends Service implements FloatingViewListener {
         iconView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(PopService.this, "HEHE", Toast.LENGTH_SHORT).show();
+                Intent dialogIntent = new Intent(PopService.this, PopupAvatarActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(dialogIntent);
             }
         });
 
@@ -100,7 +101,7 @@ public class PopService extends Service implements FloatingViewListener {
         builder.setCategory(NotificationCompat.CATEGORY_SERVICE);
 
         // PendingIntent作成
-        final Intent notifyIntent = new Intent(this, MainActivity.class);
+        final Intent notifyIntent = new Intent(this, MapsFragment.class);
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(notifyPendingIntent);
 

@@ -7,9 +7,14 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        config {
+            keyAlias '123456'
+            storeFile file('E:/workspace android studio/SC/SC/sc.keystore.jks')
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
-
     defaultConfig {
         applicationId "com.madre.sc"
         minSdkVersion 15
@@ -29,5 +34,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.github.recruit-lifestyle:FloatingView:1.4'
-
+    compile 'com.google.android.gms:play-services:8.1.0'
 }
