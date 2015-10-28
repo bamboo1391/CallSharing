@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -24,8 +25,7 @@ import com.madre.sc.view.fragment.MapsFragment;
  */
 public class PopupAvatarActivity extends FragmentActivity {
 
-    private Button btnShare;
-    private ImageView btnClose;
+    private ImageButton btnShare;
     private RelativeLayout layoutContainer;
     private BroadcastReceiver mReceiver;
 
@@ -46,12 +46,10 @@ public class PopupAvatarActivity extends FragmentActivity {
     }
 
     private void initUI() {
-        btnShare = (Button) findViewById(R.id.btnShareLocation);
-        btnClose = (ImageView) findViewById(R.id.btnClose);
+        btnShare = (ImageButton) findViewById(R.id.btnShareLocation);
     }
 
     private void initData() {
-        btnShare.setText("Share location");
         avatarFragment = new AvatarFragment();
         mapFragment = new MapsFragment();
 
@@ -67,8 +65,7 @@ public class PopupAvatarActivity extends FragmentActivity {
             public void onClick(View view) {
                 if (isShowMap) {
                     isShowMap = false;
-                    btnShare.setText("Close map");
-
+                    btnShare.setVisibility(View.VISIBLE);
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.layoutContainer, avatarFragment);
                     transaction.hide(mapFragment);
@@ -76,7 +73,7 @@ public class PopupAvatarActivity extends FragmentActivity {
                     transaction.commit();
                 } else {
                     isShowMap = true;
-                    btnShare.setText("Share location");
+                    btnShare.setVisibility(View.GONE);
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.layoutContainer, mapFragment);
                     transaction.hide(avatarFragment);
@@ -86,16 +83,6 @@ public class PopupAvatarActivity extends FragmentActivity {
             }
         });
 
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-//                homeIntent.addCategory(Intent.CATEGORY_HOME);
-//                homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(homeIntent);
-                System.exit(0);
-            }
-        });
     }
 
     private void initReceiver() {
@@ -116,5 +103,12 @@ public class PopupAvatarActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        sendBroadcast(new Intent(Constants.INTENT_ACTION_FINISH));
+        finish();
     }
 }

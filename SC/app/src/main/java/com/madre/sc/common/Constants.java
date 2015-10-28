@@ -6,4 +6,5 @@ package com.madre.sc.common;
 public class Constants {
 
     public static String INTENT_ACTION_CLOSE_ACTIVITY = "intent_action_close_activity";
+    public static String INTENT_ACTION_FINISH = "intent_action_finish";
 }

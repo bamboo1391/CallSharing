@@ -3,8 +3,10 @@ package com.madre.sc.service;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
@@ -26,6 +28,8 @@ import jp.co.recruit_lifestyle.android.floatingview.FloatingViewListener;
 import jp.co.recruit_lifestyle.android.floatingview.FloatingViewManager;
 
 public class PopService extends Service implements FloatingViewListener {
+    private BroadcastReceiver mReceiver;
+
     public PopService() {
     }
 
@@ -52,8 +56,10 @@ public class PopService extends Service implements FloatingViewListener {
             @Override
             public void onClick(View v) {
                 if (isShowPop) {
+                    isShowPop = false;
                     sendBroadcast(new Intent(Constants.INTENT_ACTION_CLOSE_ACTIVITY));
                 } else {
+                    isShowPop = true;
                     Intent dialogIntent = new Intent(PopService.this, PopupAvatarActivity.class);
                     dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(dialogIntent);
@@ -69,7 +75,19 @@ public class PopService extends Service implements FloatingViewListener {
         options.overMargin = (int) (10 * metrics.density);
         mFloatingViewManager.addViewToWindow(iconView, options);
 
-        startForeground(NOTIFICATION_ID, createNotification());
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Constants.INTENT_ACTION_FINISH)) {
+                    isShowPop = false;
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.INTENT_ACTION_FINISH);
+        registerReceiver(mReceiver, filter);
+
+//        startForeground(NOTIFICATION_ID, createNotification());
 
         return START_REDELIVER_INTENT;
     }
@@ -77,6 +95,7 @@ public class PopService extends Service implements FloatingViewListener {
     @Override
     public void onDestroy() {
         destroy();
+        unregisterReceiver(mReceiver);
         sendBroadcast(new Intent(Constants.INTENT_ACTION_CLOSE_ACTIVITY));
         super.onDestroy();
     }
