@@ -4,13 +4,13 @@ repositories {
     maven {
         url "https://jitpack.io"
     }
+    mavenCentral()
+
 }
 
 android {
     signingConfigs {
         config {
-            keyAlias '123456'
-            storeFile file('E:/workspace android studio/SC/SC/sc.keystore.jks')
         }
     }
     compileSdkVersion 23
@@ -21,12 +21,15 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
     }
 }
 
@@ -36,4 +39,5 @@ dependencies {
     compile 'com.github.recruit-lifestyle:FloatingView:1.4'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.google.android.gms:play-services:8.1.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.7.0'
 }
